@@ -1,5 +1,5 @@
 NAME=Skyblocks
-PROJECTID=
+PROJECTID=255568
 
 MCV=$(grep "minecraft_version" gradle.properties)
 MCVS=(${MCV//=/ })
