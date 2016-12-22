@@ -40,6 +40,8 @@ jar {
     } {
 		include "code/elix_x/excore/utils/mod/**"
 		include "code/elix_x/excore/utils/proxy/**"
+		include "code/elix_x/excore/utils/recipes/**"
+		include "code/elix_x/excore/utils/items/**"
 		include "code/elix_x/excore/utils/client/render/wtw/**"
     }
 	from {
