@@ -8,7 +8,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 repositories {
@@ -22,7 +22,9 @@ sourceCompatibility = java_version
 targetCompatibility = java_version
 
 dependencies {
-	compile "code.elix_x.excore:EXCore:$excore_version-$minecraft_version"
+	compile("code.elix_x.excore:EXCore:$excore_version-$minecraft_version"){
+		exclude group: "com.google.guava"
+	}
 }
 
 def theName = name
@@ -40,8 +42,6 @@ jar {
     } {
 		include "code/elix_x/excore/utils/mod/**"
 		include "code/elix_x/excore/utils/proxy/**"
-		include "code/elix_x/excore/utils/recipes/**"
-		include "code/elix_x/excore/utils/items/**"
 		include "code/elix_x/excore/utils/client/render/wtw/**"
     }
 	from {
@@ -97,10 +97,10 @@ task generatePom {
 				description theDescription
 				url "https://github.com/Elix-x/${theName}"
                 licenses {
-                    license {
-                        name 'Creative Commons Attribution-NonCommercial 4.0 International Public License'
+					license {
+						name 'Creative Commons Attribution-NonCommercial 4.0 International Public License'
                         url 'https://creativecommons.org/licenses/by-nc/4.0/legalcode'
-                    }
+					}
                 }
 				developers {
 					developer {
