@@ -1,21 +1,12 @@
 package code.elix_x.mods.skyblocks;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 import code.elix_x.excore.utils.mod.IMod;
 import code.elix_x.excore.utils.proxy.IProxy;
-import code.elix_x.excore.utils.recipes.RecipeStringTranslator;
 import code.elix_x.mods.skyblocks.block.SkyBlock;
 import code.elix_x.mods.skyblocks.tile.SkyblockTileEntity;
 import code.elix_x.mods.skyblocks.worldgen.CloudsGenerator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -25,6 +16,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import java.io.File;
 
 @Mod(modid = SkyblocksBase.MODID, name = SkyblocksBase.NAME, version = SkyblocksBase.VERSION)
 public class SkyblocksBase implements IMod<SkyblocksBase, IProxy<SkyblocksBase>> {
@@ -58,7 +51,6 @@ public class SkyblocksBase implements IMod<SkyblocksBase, IProxy<SkyblocksBase>>
 		File configFile = new File(event.getModConfigurationDirectory(), NAME + ".cfg");
 		Configuration config = new Configuration(configFile, VERSION);
 		config.load();
-		GameRegistry.addRecipe(RecipeStringTranslator.fromString(new ItemStack(skyblock, config.getInt("amount", "CRAFTING", 6, 1, 64, "The amount of skyblocks obtained as result of crafting them")), RecipeStringTranslator.validateFromConfig(config.getStringList("recipe", "CRAFTING", new String[0], "The recipe for skyblock.\nDefault Open Blocks Recipe:\n" + Arrays.stream(RecipeStringTranslator.toString("GEG", "GSG", "GEG", 'G', "blockGlass", 'E', Items.ENDER_EYE, 'S', "endstone")).collect(Collectors.joining("\n")) + "\n\n"))));
 		if(config.getBoolean("Enabled", "CLOUDS", true, "Enable / disable skyblock clouds generation")) GameRegistry.registerWorldGenerator(new CloudsGenerator(config, skyblock.getDefaultState()), 0);
 		config.save();
 		proxy.preInit(event);
