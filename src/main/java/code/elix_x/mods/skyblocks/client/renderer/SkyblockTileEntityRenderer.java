@@ -3,6 +3,7 @@ package code.elix_x.mods.skyblocks.client.renderer;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import net.minecraft.client.renderer.BufferBuilder;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
 
@@ -13,7 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
@@ -43,7 +43,7 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer {
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage){
+	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
 		IBlockAccess world = te.getWorld();
 		BlockPos pos = te.getPos();
 		IBlockState state = world.getBlockState(pos);
@@ -59,7 +59,7 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer {
 		GlStateManager.disableTexture2D();
 		GlStateManager.enableBlend();
 		Tessellator tess = Tessellator.getInstance();
-		VertexBuffer buff = tess.getBuffer();
+		BufferBuilder buff = tess.getBuffer();
 		buff.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 
 		if(state.shouldSideBeRendered(world, pos, EnumFacing.DOWN)){
@@ -131,7 +131,7 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer {
 			float green = entityRenderer.<Float> getDeclaredField("fogColorGreen", "field_175082_R").setAccessible(true).get(renderer);
 			float blue = entityRenderer.<Float> getDeclaredField("fogColorBlue", "field_175081_S").setAccessible(true).get(renderer);
 			Tessellator tess = new Tessellator(20);
-			VertexBuffer buffer = tess.getBuffer();
+			BufferBuilder buffer = tess.getBuffer();
 			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 			buffer.pos(0, 0, 1).color(red, green, blue, 0.5f).endVertex();
 			buffer.pos(0, mc.displayHeight, 1).color(red, green, blue, 0.5f).endVertex();
