@@ -3,7 +3,9 @@ package code.elix_x.mods.skyblocks.client.renderer;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import code.elix_x.mods.skyblocks.block.SkyBlock;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
 
@@ -44,11 +46,12 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer {
 
 	@Override
 	public void render(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
-		IBlockAccess world = te.getWorld();
+		World world = te.getWorld();
 		BlockPos pos = te.getPos();
 		IBlockState state = world.getBlockState(pos);
-		if(state.shouldSideBeRendered(world, pos, EnumFacing.DOWN) || state.shouldSideBeRendered(world, pos, EnumFacing.NORTH) || state.shouldSideBeRendered(world, pos, EnumFacing.WEST) || state.shouldSideBeRendered(world, pos, EnumFacing.UP) || state.shouldSideBeRendered(world, pos, EnumFacing.SOUTH) || state.shouldSideBeRendered(world, pos, EnumFacing.EAST))
-			skyBlocks.add(() -> renderStencil(te.getWorld(), te.getPos(), x, y, z));
+		if(!state.getValue(SkyBlock.POWERED))
+			if(state.shouldSideBeRendered(world, pos, EnumFacing.DOWN) || state.shouldSideBeRendered(world, pos, EnumFacing.NORTH) || state.shouldSideBeRendered(world, pos, EnumFacing.WEST) || state.shouldSideBeRendered(world, pos, EnumFacing.UP) || state.shouldSideBeRendered(world, pos, EnumFacing.SOUTH) || state.shouldSideBeRendered(world, pos, EnumFacing.EAST))
+				skyBlocks.add(() -> renderStencil(world, pos, x, y, z));
 	}
 
 	void renderStencil(IBlockAccess world, BlockPos pos, double x, double y, double z){
