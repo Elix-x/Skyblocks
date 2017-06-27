@@ -1,0 +1,16 @@
+[
+{
+  "modid": "skyblocks",
+  "name": "Skyblocks",
+  "description": "\"A skyblock is a piece of sky that you can bring home.\"",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://minecraft.curseforge.com/projects/skyblocks",
+  "updateUrl": "",
+  "authorList": ["Elix_x"],
+  "credits": "Natura dev team for their clouds generator code.",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
