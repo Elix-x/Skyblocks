@@ -17,6 +17,7 @@ public class SkyBlock extends Block {
 		setCreativeTab(CreativeTabs.DECORATIONS);
 	}
 
+	@Override
 	public boolean hasTileEntity(IBlockState state){
 		return true;
 	}
@@ -26,10 +27,12 @@ public class SkyBlock extends Block {
 		return new SkyblockTileEntity();
 	}
 
+	@Override
 	public boolean isOpaqueCube(IBlockState state){
 		return false;
 	}
 
+	@Override
 	public EnumBlockRenderType getRenderType(IBlockState state){
 		return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
