@@ -5,9 +5,12 @@ import code.elix_x.excore.utils.proxy.IProxy;
 import code.elix_x.mods.skyblocks.block.SkyBlock;
 import code.elix_x.mods.skyblocks.tile.SkyblockTileEntity;
 import code.elix_x.mods.skyblocks.worldgen.CloudsGenerator;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -15,10 +18,12 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.io.File;
 
+@Mod.EventBusSubscriber
 @Mod(modid = SkyblocksBase.MODID, name = SkyblocksBase.NAME, version = SkyblocksBase.VERSION)
 public class SkyblocksBase implements IMod<SkyblocksBase, IProxy<SkyblocksBase>> {
 
@@ -44,8 +49,7 @@ public class SkyblocksBase implements IMod<SkyblocksBase, IProxy<SkyblocksBase>>
 	@Override
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
-		GameRegistry.register((skyblock = new SkyBlock()).setRegistryName(SKYBLOCK));
-		GameRegistry.register(new ItemBlock(skyblock).setRegistryName(SKYBLOCK));
+		(skyblock = new SkyBlock()).setRegistryName(SKYBLOCK);
 		GameRegistry.registerTileEntity(SkyblockTileEntity.class, SKYBLOCK.toString());
 
 		File configFile = new File(event.getModConfigurationDirectory(), NAME + ".cfg");
@@ -54,6 +58,16 @@ public class SkyblocksBase implements IMod<SkyblocksBase, IProxy<SkyblocksBase>>
 		if(config.getBoolean("Enabled", "CLOUDS", true, "Enable / disable skyblock clouds generation")) GameRegistry.registerWorldGenerator(new CloudsGenerator(config, skyblock.getDefaultState()), 0);
 		config.save();
 		proxy.preInit(event);
+	}
+
+	@SubscribeEvent
+	public static void registerBlocks(RegistryEvent.Register<Block> event){
+		event.getRegistry().register(INSTANCE.skyblock);
+	}
+
+	@SubscribeEvent
+	public static void registerItems(RegistryEvent.Register<Item> event){
+		event.getRegistry().register(new ItemBlock(INSTANCE.skyblock).setRegistryName(SKYBLOCK));
 	}
 
 	@EventHandler
