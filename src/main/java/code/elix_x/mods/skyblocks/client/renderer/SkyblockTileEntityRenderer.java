@@ -56,6 +56,9 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer {
 	void renderStencil(IBlockAccess world, BlockPos pos, double x, double y, double z){
 		IBlockState state = world.getBlockState(pos);
 
+		final float min = -0.01f;
+		final float max = 1.01f;
+		
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(x, y, z);
 		GlStateManager.disableTexture2D();
@@ -65,45 +68,45 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer {
 		buff.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 
 		if(state.shouldSideBeRendered(world, pos, EnumFacing.DOWN)){
-			buff.pos(0, 0, 0).endVertex();
-			buff.pos(1, 0, 0).endVertex();
-			buff.pos(1, 0, 1).endVertex();
-			buff.pos(0, 0, 1).endVertex();
+			buff.pos(min, min, min).endVertex();
+			buff.pos(max, min, min).endVertex();
+			buff.pos(max, min, max).endVertex();
+			buff.pos(min, min, max).endVertex();
 		}
 
 		if(state.shouldSideBeRendered(world, pos, EnumFacing.NORTH)){
-			buff.pos(0, 0, 0).endVertex();
-			buff.pos(0, 1, 0).endVertex();
-			buff.pos(1, 1, 0).endVertex();
-			buff.pos(1, 0, 0).endVertex();
+			buff.pos(min, min, min).endVertex();
+			buff.pos(min, max, min).endVertex();
+			buff.pos(max, max, min).endVertex();
+			buff.pos(max, min, min).endVertex();
 		}
 
 		if(state.shouldSideBeRendered(world, pos, EnumFacing.WEST)){
-			buff.pos(0, 0, 0).endVertex();
-			buff.pos(0, 0, 1).endVertex();
-			buff.pos(0, 1, 1).endVertex();
-			buff.pos(0, 1, 0).endVertex();
+			buff.pos(min, min, min).endVertex();
+			buff.pos(min, min, max).endVertex();
+			buff.pos(min, max, max).endVertex();
+			buff.pos(min, max, min).endVertex();
 		}
 
 		if(state.shouldSideBeRendered(world, pos, EnumFacing.UP)){
-			buff.pos(0, 1, 0).endVertex();
-			buff.pos(0, 1, 1).endVertex();
-			buff.pos(1, 1, 1).endVertex();
-			buff.pos(1, 1, 0).endVertex();
+			buff.pos(min, max, min).endVertex();
+			buff.pos(min, max, max).endVertex();
+			buff.pos(max, max, max).endVertex();
+			buff.pos(max, max, min).endVertex();
 		}
 
 		if(state.shouldSideBeRendered(world, pos, EnumFacing.SOUTH)){
-			buff.pos(0, 0, 1).endVertex();
-			buff.pos(1, 0, 1).endVertex();
-			buff.pos(1, 1, 1).endVertex();
-			buff.pos(0, 1, 1).endVertex();
+			buff.pos(min, min, max).endVertex();
+			buff.pos(max, min, max).endVertex();
+			buff.pos(max, max, max).endVertex();
+			buff.pos(min, max, max).endVertex();
 		}
 
 		if(state.shouldSideBeRendered(world, pos, EnumFacing.EAST)){
-			buff.pos(1, 0, 0).endVertex();
-			buff.pos(1, 1, 0).endVertex();
-			buff.pos(1, 1, 1).endVertex();
-			buff.pos(1, 0, 1).endVertex();
+			buff.pos(max, min, min).endVertex();
+			buff.pos(max, max, min).endVertex();
+			buff.pos(max, max, max).endVertex();
+			buff.pos(max, min, max).endVertex();
 		}
 
 		tess.draw();
