@@ -32,9 +32,4 @@ public class SkyBlock extends Block {
 		return false;
 	}
 
-	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state){
-		return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
-	}
-
 }
