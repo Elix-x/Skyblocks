@@ -1,17 +1,10 @@
 package code.elix_x.mods.skyblocks.client.renderer;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.world.World;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.Project;
-
 import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
 import code.elix_x.excore.utils.client.render.wtw.WTWRenderer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -23,9 +16,15 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.Project;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer {
 
@@ -175,6 +174,9 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer {
 		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 
 		GlStateManager.popMatrix();
+
+		GlStateManager.enableDepth();
+		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 	}
 
 }
