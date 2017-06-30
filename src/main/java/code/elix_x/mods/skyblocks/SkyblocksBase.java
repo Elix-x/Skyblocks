@@ -40,6 +40,7 @@ public class SkyblocksBase implements IMod<SkyblocksBase, IProxy<SkyblocksBase>>
 	public static IProxy<SkyblocksBase> proxy;
 
 	public SkyBlock skyblock;
+	public ItemBlock skyblockItem;
 
 	@Override
 	public IProxy<SkyblocksBase> getProxy(){
@@ -50,6 +51,7 @@ public class SkyblocksBase implements IMod<SkyblocksBase, IProxy<SkyblocksBase>>
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
 		(skyblock = new SkyBlock()).setRegistryName(SKYBLOCK);
+		(skyblockItem = new ItemBlock(INSTANCE.skyblock)).setRegistryName(SKYBLOCK);
 		GameRegistry.registerTileEntity(SkyblockTileEntity.class, SKYBLOCK.toString());
 
 		File configFile = new File(event.getModConfigurationDirectory(), NAME + ".cfg");
@@ -67,7 +69,7 @@ public class SkyblocksBase implements IMod<SkyblocksBase, IProxy<SkyblocksBase>>
 
 	@SubscribeEvent
 	public static void registerItems(RegistryEvent.Register<Item> event){
-		event.getRegistry().register(new ItemBlock(INSTANCE.skyblock).setRegistryName(SKYBLOCK));
+		event.getRegistry().register(INSTANCE.skyblockItem);
 	}
 
 	@EventHandler

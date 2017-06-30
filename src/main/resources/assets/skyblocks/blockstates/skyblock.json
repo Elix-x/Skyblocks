@@ -1,6 +1,5 @@
 {
     "variants": {
-        "normal": { "model": "skyblocks:skyblock" },
-        "inventory": { "model": "skyblocks:skyblock" }
+        "normal": { "model": "skyblocks:skyblock" }
     }
 }
