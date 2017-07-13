@@ -25,6 +25,7 @@ import org.lwjgl.util.glu.Project;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.function.Consumer;
 
 public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer {
 
@@ -32,15 +33,7 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
-	private Queue<Runnable> skyBlocks = new LinkedList<Runnable>();
-
-	@SubscribeEvent
-	public void renderLast(RenderWorldLastEvent event){
-		if(!skyBlocks.isEmpty()) WTWRenderer.render(() -> {
-			while(!skyBlocks.isEmpty())
-				skyBlocks.poll().run();
-		}, () -> renderSky(event.getPartialTicks()));
-	}
+	private Queue<Consumer<BufferBuilder>> skyBlocks = new LinkedList<>();
 
 	@Override
 	public void render(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
@@ -49,72 +42,78 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer {
 		IBlockState state = world.getBlockState(pos);
 		if(world.isBlockIndirectlyGettingPowered(pos) == 0)
 			if(state.shouldSideBeRendered(world, pos, EnumFacing.DOWN) || state.shouldSideBeRendered(world, pos, EnumFacing.NORTH) || state.shouldSideBeRendered(world, pos, EnumFacing.WEST) || state.shouldSideBeRendered(world, pos, EnumFacing.UP) || state.shouldSideBeRendered(world, pos, EnumFacing.SOUTH) || state.shouldSideBeRendered(world, pos, EnumFacing.EAST))
-			skyBlocks.add(() -> renderStencil(te.getWorld(), te.getPos(), x, y, z));
+				skyBlocks.add(buffer -> renderStencil(buffer, te.getWorld(), te.getPos(), x, y, z));
 	}
 
-	void renderStencil(IBlockAccess world, BlockPos pos, double x, double y, double z){
+	void renderStencil(BufferBuilder buff, IBlockAccess world, BlockPos pos, double x, double y, double z){
 		IBlockState state = world.getBlockState(pos);
+		final double diff = 0.01;
+		final double min = -diff;
+		final double max = 1 + diff;
+		double minX = x + min;
+		double minY = y + min;
+		double minZ = z + min;
+		double maxX = x + max;
+		double maxY = y + max;
+		double maxZ = z + max;
+		if(state.shouldSideBeRendered(world, pos, EnumFacing.DOWN)){
+			buff.pos(minX, minY, minZ).endVertex();
+			buff.pos(maxX, minY, minZ).endVertex();
+			buff.pos(maxX, minY, maxZ).endVertex();
+			buff.pos(minX, minY, maxZ).endVertex();
+		}
+		if(state.shouldSideBeRendered(world, pos, EnumFacing.NORTH)){
+			buff.pos(minX, minY, minZ).endVertex();
+			buff.pos(minX, maxY, minZ).endVertex();
+			buff.pos(maxX, maxY, minZ).endVertex();
+			buff.pos(maxX, minY, minZ).endVertex();
+		}
+		if(state.shouldSideBeRendered(world, pos, EnumFacing.WEST)){
+			buff.pos(minX, minY, minZ).endVertex();
+			buff.pos(minX, minY, maxZ).endVertex();
+			buff.pos(minX, maxY, maxZ).endVertex();
+			buff.pos(minX, maxY, minZ).endVertex();
+		}
+		if(state.shouldSideBeRendered(world, pos, EnumFacing.UP)){
+			buff.pos(minX, maxY, minZ).endVertex();
+			buff.pos(minX, maxY, maxZ).endVertex();
+			buff.pos(maxX, maxY, maxZ).endVertex();
+			buff.pos(maxX, maxY, minZ).endVertex();
+		}
+		if(state.shouldSideBeRendered(world, pos, EnumFacing.SOUTH)){
+			buff.pos(minX, minY, maxZ).endVertex();
+			buff.pos(maxX, minY, maxZ).endVertex();
+			buff.pos(maxX, maxY, maxZ).endVertex();
+			buff.pos(minX, maxY, maxZ).endVertex();
+		}
+		if(state.shouldSideBeRendered(world, pos, EnumFacing.EAST)){
+			buff.pos(maxX, minY, minZ).endVertex();
+			buff.pos(maxX, maxY, minZ).endVertex();
+			buff.pos(maxX, maxY, maxZ).endVertex();
+			buff.pos(maxX, minY, maxZ).endVertex();
+		}
+	}
 
-		final float min = -0.01f;
-		final float max = 1.01f;
-		
+	@SubscribeEvent
+	public void renderLast(RenderWorldLastEvent event){
+		if(!skyBlocks.isEmpty()) WTWRenderer.render(() -> renderStencil(event.getPartialTicks()), () -> renderSky(event.getPartialTicks()));
+	}
+
+	private void renderStencil(float partialTicks){
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(x, y, z);
 		GlStateManager.disableTexture2D();
 		GlStateManager.enableBlend();
 		Tessellator tess = Tessellator.getInstance();
-		BufferBuilder buff = tess.getBuffer();
-		buff.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-
-		if(state.shouldSideBeRendered(world, pos, EnumFacing.DOWN)){
-			buff.pos(min, min, min).endVertex();
-			buff.pos(max, min, min).endVertex();
-			buff.pos(max, min, max).endVertex();
-			buff.pos(min, min, max).endVertex();
-		}
-
-		if(state.shouldSideBeRendered(world, pos, EnumFacing.NORTH)){
-			buff.pos(min, min, min).endVertex();
-			buff.pos(min, max, min).endVertex();
-			buff.pos(max, max, min).endVertex();
-			buff.pos(max, min, min).endVertex();
-		}
-
-		if(state.shouldSideBeRendered(world, pos, EnumFacing.WEST)){
-			buff.pos(min, min, min).endVertex();
-			buff.pos(min, min, max).endVertex();
-			buff.pos(min, max, max).endVertex();
-			buff.pos(min, max, min).endVertex();
-		}
-
-		if(state.shouldSideBeRendered(world, pos, EnumFacing.UP)){
-			buff.pos(min, max, min).endVertex();
-			buff.pos(min, max, max).endVertex();
-			buff.pos(max, max, max).endVertex();
-			buff.pos(max, max, min).endVertex();
-		}
-
-		if(state.shouldSideBeRendered(world, pos, EnumFacing.SOUTH)){
-			buff.pos(min, min, max).endVertex();
-			buff.pos(max, min, max).endVertex();
-			buff.pos(max, max, max).endVertex();
-			buff.pos(min, max, max).endVertex();
-		}
-
-		if(state.shouldSideBeRendered(world, pos, EnumFacing.EAST)){
-			buff.pos(max, min, min).endVertex();
-			buff.pos(max, max, min).endVertex();
-			buff.pos(max, max, max).endVertex();
-			buff.pos(max, min, max).endVertex();
-		}
-
+		BufferBuilder buffer = tess.getBuffer();
+		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+		while(skyBlocks.peek() != null) skyBlocks.poll().accept(buffer);
 		tess.draw();
 		GlStateManager.disableBlend();
 		GlStateManager.enableTexture2D();
 		GlStateManager.popMatrix();
 	}
 
-	void renderSky(float partialTicks){
+	private void renderSky(float partialTicks){
 		Minecraft mc = Minecraft.getMinecraft();
 		EntityRenderer renderer = mc.entityRenderer;
 		AClass<EntityRenderer> entityRenderer = new AClass<>(EntityRenderer.class);
