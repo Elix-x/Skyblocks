@@ -96,31 +96,10 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer<Skyblo
 
 	@SubscribeEvent
 	public void renderLast(RenderWorldLastEvent event){
-		if(!skyblocks.isEmpty()){
-			if(false) WTWRenderer.render(() -> {}, () -> {if(false) writeGlobalDepth(event.getPartialTicks());});
-			skyblocks.keySet().forEach(time -> WTWRenderer.render(() -> renderStencil(time, event.getPartialTicks()), () -> renderSky(time, event.getPartialTicks())));
-			skyblocks.clear();
-		}
-	}
-
-	private void writeGlobalDepth(float partialTicks){
-		GlStateManager.colorMask(false, false, false, false);
-		GlStateManager.pushMatrix();
-		GlStateManager.disableTexture2D();
-		GlStateManager.enableBlend();
-		Tessellator tess = Tessellator.getInstance();
-		BufferBuilder buffer = tess.getBuffer();
-		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-		skyblocks.values().forEach(consumer -> consumer.accept(buffer));
-		tess.draw();
-		GlStateManager.disableBlend();
-		GlStateManager.enableTexture2D();
-		GlStateManager.popMatrix();
-		GlStateManager.colorMask(true, true, true, true);
+		if(!skyblocks.isEmpty()) skyblocks.keySet().forEach(time -> WTWRenderer.render(() -> renderStencil(time, event.getPartialTicks()), () -> renderSky(time, event.getPartialTicks())));
 	}
 
 	private void renderStencil(int time, float partialTicks){
-		GlStateManager.depthFunc(GL11.GL_EQUAL);
 		GlStateManager.pushMatrix();
 		GlStateManager.disableTexture2D();
 		GlStateManager.enableBlend();
@@ -132,7 +111,6 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer<Skyblo
 		GlStateManager.disableBlend();
 		GlStateManager.enableTexture2D();
 		GlStateManager.popMatrix();
-		GlStateManager.depthFunc(GL11.GL_LEQUAL);
 	}
 
 	private void renderSky(int time, float partialTicks){
@@ -142,6 +120,7 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer<Skyblo
 		float fov = entityRenderer.<Float> getDeclaredMethod(new String[]{"getFOVModifier", "func_78481_a"}, float.class, boolean.class).setAccessible(true).invoke(renderer, partialTicks, true);
 
 		GlStateManager.pushMatrix();
+		GlStateManager.depthMask(false);
 
 		new AClass<>(EntityRenderer.class).getDeclaredMethod(new String[]{"setupFog", "func_78468_a"}, int.class, float.class).setAccessible(true).invoke(renderer, -1, partialTicks);
 
@@ -191,6 +170,7 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer<Skyblo
 
 		GlStateManager.disableFog();
 		GlStateManager.depthFunc(GL11.GL_LEQUAL);
+		GlStateManager.depthMask(true);
 
 		GlStateManager.matrixMode(GL11.GL_PROJECTION);
 		GlStateManager.loadIdentity();
