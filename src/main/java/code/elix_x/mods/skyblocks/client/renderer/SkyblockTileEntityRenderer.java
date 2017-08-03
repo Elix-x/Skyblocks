@@ -2,6 +2,7 @@ package code.elix_x.mods.skyblocks.client.renderer;
 
 import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
 import code.elix_x.excore.utils.client.render.wtw.WTWRenderer;
+import code.elix_x.mods.skyblocks.tile.SkyblockTileEntity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -11,7 +12,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
