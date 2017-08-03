@@ -3,11 +3,11 @@ package code.elix_x.mods.skyblocks;
 import code.elix_x.excore.utils.mod.IMod;
 import code.elix_x.excore.utils.proxy.IProxy;
 import code.elix_x.mods.skyblocks.block.SkyBlock;
+import code.elix_x.mods.skyblocks.item.ItemBlockSkyblock;
 import code.elix_x.mods.skyblocks.tile.SkyblockTileEntity;
 import code.elix_x.mods.skyblocks.worldgen.CloudsGenerator;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
@@ -40,7 +40,7 @@ public class SkyblocksBase implements IMod<SkyblocksBase, IProxy<SkyblocksBase>>
 	public static IProxy<SkyblocksBase> proxy;
 
 	public SkyBlock skyblock;
-	public ItemBlock skyblockItem;
+	public Item skyblockItem;
 
 	@Override
 	public IProxy<SkyblocksBase> getProxy(){
@@ -51,7 +51,7 @@ public class SkyblocksBase implements IMod<SkyblocksBase, IProxy<SkyblocksBase>>
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
 		(skyblock = new SkyBlock()).setRegistryName(SKYBLOCK);
-		(skyblockItem = new ItemBlock(INSTANCE.skyblock)).setRegistryName(SKYBLOCK);
+		(skyblockItem = new ItemBlockSkyblock(INSTANCE.skyblock)).setRegistryName(SKYBLOCK);
 		GameRegistry.registerTileEntity(SkyblockTileEntity.class, SKYBLOCK.toString());
 
 		File configFile = new File(event.getModConfigurationDirectory(), NAME + ".cfg");
