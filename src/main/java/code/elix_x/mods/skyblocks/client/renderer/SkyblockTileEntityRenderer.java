@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.function.Consumer;
 
-public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer {
+public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer<SkyblockTileEntity> {
 
 	public SkyblockTileEntityRenderer(){
 		MinecraftForge.EVENT_BUS.register(this);
@@ -36,7 +36,7 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer {
 	private Queue<Consumer<BufferBuilder>> skyBlocks = new LinkedList<>();
 
 	@Override
-	public void render(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
+	public void render(SkyblockTileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
 		World world = te.getWorld();
 		BlockPos pos = te.getPos();
 		IBlockState state = world.getBlockState(pos);
