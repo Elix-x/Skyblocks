@@ -2,6 +2,9 @@ package code.elix_x.mods.skyblocks.client.renderer;
 
 import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
 import code.elix_x.excore.utils.client.render.wtw.WTWRenderer;
+import code.elix_x.mods.skyblocks.tile.SkyblockTileEntity;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -11,7 +14,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -23,8 +25,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
 
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.function.Consumer;
 
 public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer<SkyblockTileEntity> {
@@ -33,7 +33,7 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer<Skyblo
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
-	private Queue<Consumer<BufferBuilder>> skyBlocks = new LinkedList<>();
+	private Multimap<Integer, Consumer<BufferBuilder>> skyblocks = HashMultimap.create();
 
 	@Override
 	public void render(SkyblockTileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
@@ -42,7 +42,7 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer<Skyblo
 		IBlockState state = world.getBlockState(pos);
 		if(world.isBlockIndirectlyGettingPowered(pos) == 0)
 			if(state.shouldSideBeRendered(world, pos, EnumFacing.DOWN) || state.shouldSideBeRendered(world, pos, EnumFacing.NORTH) || state.shouldSideBeRendered(world, pos, EnumFacing.WEST) || state.shouldSideBeRendered(world, pos, EnumFacing.UP) || state.shouldSideBeRendered(world, pos, EnumFacing.SOUTH) || state.shouldSideBeRendered(world, pos, EnumFacing.EAST))
-				skyBlocks.add(buffer -> renderStencil(buffer, te.getWorld(), te.getPos(), x, y, z));
+				skyblocks.put(te.getSkyblockTime(), buffer -> renderStencil(buffer, te.getWorld(), te.getPos(), x, y, z));
 	}
 
 	void renderStencil(BufferBuilder buff, IBlockAccess world, BlockPos pos, double x, double y, double z){
@@ -96,24 +96,46 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer<Skyblo
 
 	@SubscribeEvent
 	public void renderLast(RenderWorldLastEvent event){
-		if(!skyBlocks.isEmpty()) WTWRenderer.render(() -> renderStencil(event.getPartialTicks()), () -> renderSky(event.getPartialTicks()));
+		if(!skyblocks.isEmpty()){
+			if(false) WTWRenderer.render(() -> {}, () -> {if(false) writeGlobalDepth(event.getPartialTicks());});
+			skyblocks.keySet().forEach(time -> WTWRenderer.render(() -> renderStencil(time, event.getPartialTicks()), () -> renderSky(time, event.getPartialTicks())));
+			skyblocks.clear();
+		}
 	}
 
-	private void renderStencil(float partialTicks){
+	private void writeGlobalDepth(float partialTicks){
+		GlStateManager.colorMask(false, false, false, false);
 		GlStateManager.pushMatrix();
 		GlStateManager.disableTexture2D();
 		GlStateManager.enableBlend();
 		Tessellator tess = Tessellator.getInstance();
 		BufferBuilder buffer = tess.getBuffer();
 		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-		while(skyBlocks.peek() != null) skyBlocks.poll().accept(buffer);
+		skyblocks.values().forEach(consumer -> consumer.accept(buffer));
 		tess.draw();
 		GlStateManager.disableBlend();
 		GlStateManager.enableTexture2D();
 		GlStateManager.popMatrix();
+		GlStateManager.colorMask(true, true, true, true);
 	}
 
-	private void renderSky(float partialTicks){
+	private void renderStencil(int time, float partialTicks){
+		GlStateManager.depthFunc(GL11.GL_EQUAL);
+		GlStateManager.pushMatrix();
+		GlStateManager.disableTexture2D();
+		GlStateManager.enableBlend();
+		Tessellator tess = Tessellator.getInstance();
+		BufferBuilder buffer = tess.getBuffer();
+		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+		skyblocks.removeAll(time).forEach(consumer -> consumer.accept(buffer));
+		tess.draw();
+		GlStateManager.disableBlend();
+		GlStateManager.enableTexture2D();
+		GlStateManager.popMatrix();
+		GlStateManager.depthFunc(GL11.GL_LEQUAL);
+	}
+
+	private void renderSky(int time, float partialTicks){
 		Minecraft mc = Minecraft.getMinecraft();
 		EntityRenderer renderer = mc.entityRenderer;
 		AClass<EntityRenderer> entityRenderer = new AClass<>(EntityRenderer.class);
@@ -157,10 +179,13 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer<Skyblo
 		double posY = player.posY;
 		player.prevPosY = 256;
 		player.posY = 256;
+		long prevTime = getWorld().getWorldTime();
+		getWorld().setWorldTime(time);
 
 		GlStateManager.color(0, 0, 0);
 		mc.renderGlobal.renderSky(partialTicks, 2);
 
+		getWorld().setWorldTime(prevTime);
 		player.prevPosY = prevPosY;
 		player.posY = posY;
 
