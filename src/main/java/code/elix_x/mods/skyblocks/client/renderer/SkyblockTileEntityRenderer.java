@@ -96,7 +96,7 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer<Skyblo
 
 	@SubscribeEvent
 	public void renderLast(RenderWorldLastEvent event){
-		if(!skyBlocks.isEmpty()) WTWRenderer.render(() -> renderStencil(event.getPartialTicks()), () -> renderSky(event.getPartialTicks()));
+		if(!skyBlocks.isEmpty()) WTWRenderer.Phase.STENCIL.render(() -> renderStencil(event.getPartialTicks()), () -> renderSky(event.getPartialTicks()));
 	}
 
 	private void renderStencil(float partialTicks){
