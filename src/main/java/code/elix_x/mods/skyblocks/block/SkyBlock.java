@@ -56,6 +56,10 @@ public class SkyBlock extends Block {
 		for(boolean fixed : FIXED.getAllowedValues()) for(int time : TIME.getAllowedValues()) items.add(new ItemStack(this, 1, getMetaFromState(getDefaultState().withProperty(FIXED, fixed).withProperty(TIME, time))));
 	}
 
+	public int getSkyblockTime(World world, IBlockState state){
+		return (state.getValue(FIXED) ? 0 : (int) world.getWorldTime()) + state.getValue(TIME) * TIMEINTERVAL;
+	}
+
 	@Override
 	public boolean hasTileEntity(IBlockState state){
 		return true;
