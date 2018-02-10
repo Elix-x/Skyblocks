@@ -14,11 +14,31 @@ import net.minecraft.world.World;
 
 public class SkyBlock extends Block {
 
-	public SkyBlock(){
+	public static final int TIMEINTERVAL = 6000;
+
+	protected int time;
+	protected boolean relative;
+
+	public SkyBlock(int time, boolean relative){
 		super(Material.CLOTH);
+		this.time = time;
+		this.relative = relative;
+
 		setUnlocalizedName("skyblock");
 		setCreativeTab(CreativeTabs.DECORATIONS);
 		setLightOpacity(0);
+	}
+
+	public int getTime(){
+		return time;
+	}
+
+	public boolean isRelative(){
+		return relative;
+	}
+
+	public int getSkyblockTime(World world, IBlockState state){
+		return (relative ? (int) world.getWorldTime() : 0) + time;
 	}
 
 	@Override
@@ -40,4 +60,5 @@ public class SkyBlock extends Block {
 	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing side){
 		return side == EnumFacing.UP ? BlockFaceShape.UNDEFINED : BlockFaceShape.SOLID;
 	}
+
 }
