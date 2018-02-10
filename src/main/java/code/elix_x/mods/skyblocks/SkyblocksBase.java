@@ -57,7 +57,7 @@ public class SkyblocksBase implements IMod<SkyblocksBase, IProxy<SkyblocksBase>>
 
 		for(boolean rel : relative) for(int t : times){
 			ResourceLocation reg = new ResourceLocation(SKYBLOCK.getResourceDomain(), String.format("%s_%s_%s", SKYBLOCK.getResourcePath(), rel ? "relative" : "fixed", t));
-			SkyBlock skyblock = (SkyBlock) new SkyBlock(t, rel).setRegistryName(reg);
+			Block skyblock = new SkyBlock(t, rel).setRegistryName(reg);
 			skyblocks.add(skyblock);
 			skyblockItems.add(new ItemBlockSkyblock(skyblock).setRegistryName(reg));
 		}

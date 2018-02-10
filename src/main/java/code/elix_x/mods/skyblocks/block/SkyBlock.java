@@ -29,6 +29,14 @@ public class SkyBlock extends Block {
 		setLightOpacity(0);
 	}
 
+	public int getTime(){
+		return time;
+	}
+
+	public boolean isRelative(){
+		return relative;
+	}
+
 	public int getSkyblockTime(World world, IBlockState state){
 		return (relative ? (int) world.getWorldTime() : 0) + time;
 	}
