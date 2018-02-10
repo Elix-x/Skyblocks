@@ -28,8 +28,8 @@ public class CloudsGenerator implements IWorldGenerator {
 	private final CloudGenerator hugeCloudGen;
 
 	public CloudsGenerator(Configuration config, IBlockState skyblock){
-		this.rainfallMin = config.getFloat("Rainfall Min", "CLOUDS", 0, 0, 1, "Minimum biome rainfall to generate clouds");
-		this.rainfallMax = config.getFloat("Rainfall Max", "CLOUDS", 0, Biomes.PLAINS.getRainfall(), 1, "Maximum biome rainfall to generate clouds");
+		this.rainfallMin = config.getFloat("Rainfall Min", "CLOUDS",  Biomes.PLAINS.getRainfall(), 0, 1, "Minimum biome rainfall to generate clouds");
+		this.rainfallMax = config.getFloat("Rainfall Max", "CLOUDS", 1, 0, 1, "Maximum biome rainfall to generate clouds");
 		this.spawnRarity = config.getInt("Rarity", "CLOUDS", 10, 0, 100, "Spawn rarity of clouds");
 		this.spawnHeight = config.getInt("Height", "CLOUDS", 212, 0, 255, "Spawn height of clouds");
 		this.spawnRange = config.getInt("Range", "CLOUDS", 13, 0, 255, "Spawn range of clouds");

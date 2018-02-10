@@ -47,7 +47,7 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer<Skyblo
 
 	void renderStencil(BufferBuilder buff, IBlockAccess world, BlockPos pos, double x, double y, double z){
 		IBlockState state = world.getBlockState(pos);
-		final double diff = 0.01;
+		final double diff = (x*x + y*y + z*z)/325125+0.001f;
 		final double min = -diff;
 		final double max = 1 + diff;
 		double minX = x + min;
@@ -96,7 +96,7 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer<Skyblo
 
 	@SubscribeEvent
 	public void renderLast(RenderWorldLastEvent event){
-		if(!skyblocks.isEmpty()) skyblocks.keySet().forEach(time -> WTWRenderer.render(() -> renderStencil(time, event.getPartialTicks()), () -> renderSky(time, event.getPartialTicks())));
+		if(!skyblocks.isEmpty()) skyblocks.keySet().forEach(time -> WTWRenderer.Phase.STENCIL.render(() -> renderStencil(time, event.getPartialTicks()), () -> renderSky(time, event.getPartialTicks())));
 	}
 
 	private void renderStencil(int time, float partialTicks){
