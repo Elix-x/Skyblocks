@@ -43,6 +43,9 @@ jar {
 		include "code/elix_x/excore/utils/mod/**"
 		include "code/elix_x/excore/utils/proxy/**"
 		include "code/elix_x/excore/utils/client/render/wtw/**"
+		include "code/elix_x/excore/utils/client/render/vbo/Vertex*"
+		include "code/elix_x/excore/utils/client/render/IVertex*"
+		include "code/elix_x/excore/utils/client/render/OpenGL*"
     }
 	from {
         zipTree((configurations.runtime - configurations.provided).find{ it.getName().startsWith("EXComms")})
