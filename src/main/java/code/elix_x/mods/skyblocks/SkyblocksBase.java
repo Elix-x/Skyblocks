@@ -22,6 +22,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod.EventBusSubscriber
 @Mod(modid = SkyblocksBase.MODID, name = SkyblocksBase.NAME, version = SkyblocksBase.VERSION)
@@ -39,8 +41,8 @@ public class SkyblocksBase implements IMod<SkyblocksBase, IProxy<SkyblocksBase>>
 	@SidedProxy(modId = MODID, clientSide = "code.elix_x.mods.skyblocks.proxy.ClientProxy", serverSide = "code.elix_x.mods.skyblocks.proxy.ServerProxy")
 	public static IProxy<SkyblocksBase> proxy;
 
-	public SkyBlock skyblock;
-	public Item skyblockItem;
+	public List<Block> skyblocks = new ArrayList<>();
+	public List<Item> skyblockItems = new ArrayList<>();
 
 	@Override
 	public IProxy<SkyblocksBase> getProxy(){
@@ -50,26 +52,33 @@ public class SkyblocksBase implements IMod<SkyblocksBase, IProxy<SkyblocksBase>>
 	@Override
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
-		(skyblock = new SkyBlock()).setRegistryName(SKYBLOCK);
-		(skyblockItem = new ItemBlockSkyblock(INSTANCE.skyblock)).setRegistryName(SKYBLOCK);
+		boolean[] relative = new boolean[]{true, false};
+		int[] times = new int[]{0, 6000, 12000, 18000};
+
+		for(boolean rel : relative) for(int t : times){
+			ResourceLocation reg = new ResourceLocation(SKYBLOCK.getResourceDomain(), String.format("%s_%s_%s", SKYBLOCK.getResourcePath(), rel ? "relative" : "fixed", t));
+			SkyBlock skyblock = (SkyBlock) new SkyBlock(t, rel).setRegistryName(reg);
+			skyblocks.add(skyblock);
+			skyblockItems.add(new ItemBlockSkyblock(skyblock).setRegistryName(reg));
+		}
 		GameRegistry.registerTileEntity(SkyblockTileEntity.class, SKYBLOCK.toString());
 
 		File configFile = new File(event.getModConfigurationDirectory(), NAME + ".cfg");
 		Configuration config = new Configuration(configFile, VERSION);
 		config.load();
-		if(config.getBoolean("Enabled", "CLOUDS", true, "Enable / disable skyblock clouds generation")) GameRegistry.registerWorldGenerator(new CloudsGenerator(config, skyblock.getDefaultState()), 0);
+		if(config.getBoolean("Enabled", "CLOUDS", true, "Enable / disable skyblock clouds generation")) GameRegistry.registerWorldGenerator(new CloudsGenerator(config, skyblocks.get(0).getDefaultState()), 0);
 		config.save();
 		proxy.preInit(event);
 	}
 
 	@SubscribeEvent
 	public static void registerBlocks(RegistryEvent.Register<Block> event){
-		event.getRegistry().register(INSTANCE.skyblock);
+		INSTANCE.skyblocks.forEach(event.getRegistry()::register);
 	}
 
 	@SubscribeEvent
 	public static void registerItems(RegistryEvent.Register<Item> event){
-		event.getRegistry().register(INSTANCE.skyblockItem);
+		INSTANCE.skyblockItems.forEach(event.getRegistry()::register);
 	}
 
 	@EventHandler

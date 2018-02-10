@@ -3,17 +3,11 @@ package code.elix_x.mods.skyblocks.block;
 import code.elix_x.mods.skyblocks.tile.SkyblockTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -21,43 +15,22 @@ import net.minecraft.world.World;
 public class SkyBlock extends Block {
 
 	public static final int TIMEINTERVAL = 6000;
-	public static final IProperty<Integer> TIME = PropertyInteger.create("time", 0, 3);
-	public static final IProperty<Boolean> FIXED = PropertyBool.create("fixed");
 
-	public SkyBlock(){
+	protected int time;
+	protected boolean relative;
+
+	public SkyBlock(int time, boolean relative){
 		super(Material.CLOTH);
+		this.time = time;
+		this.relative = relative;
+
 		setUnlocalizedName("skyblock");
 		setCreativeTab(CreativeTabs.DECORATIONS);
 		setLightOpacity(0);
 	}
 
-	@Override
-	protected BlockStateContainer createBlockState(){
-		return new BlockStateContainer(this, TIME, FIXED);
-	}
-
-	@Override
-	public int getMetaFromState(IBlockState state){
-		return ((state.getValue(FIXED) ? 1 : 0) << 2) | state.getValue(TIME);
-	}
-
-	@Override
-	public IBlockState getStateFromMeta(int meta){
-		return getDefaultState().withProperty(FIXED, (meta & 0b0100) != 0).withProperty(TIME, meta & 0b0011);
-	}
-
-	@Override
-	public int damageDropped(IBlockState state){
-		return getMetaFromState(state);
-	}
-
-	@Override
-	public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items){
-		for(boolean fixed : FIXED.getAllowedValues()) for(int time : TIME.getAllowedValues()) items.add(new ItemStack(this, 1, getMetaFromState(getDefaultState().withProperty(FIXED, fixed).withProperty(TIME, time))));
-	}
-
 	public int getSkyblockTime(World world, IBlockState state){
-		return (state.getValue(FIXED) ? 0 : (int) world.getWorldTime()) + state.getValue(TIME) * TIMEINTERVAL;
+		return (relative ? (int) world.getWorldTime() : 0) + time;
 	}
 
 	@Override

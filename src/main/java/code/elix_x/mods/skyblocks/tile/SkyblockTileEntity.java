@@ -1,6 +1,6 @@
 package code.elix_x.mods.skyblocks.tile;
 
-import code.elix_x.mods.skyblocks.SkyblocksBase;
+import code.elix_x.mods.skyblocks.block.SkyBlock;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.relauncher.Side;
@@ -10,7 +10,7 @@ public class SkyblockTileEntity extends TileEntity {
 
 	public int getSkyblockTime(){
 		IBlockState state = getBlockType().getStateFromMeta(getBlockMetadata());
-		return SkyblocksBase.INSTANCE.skyblock.getSkyblockTime(world, state);
+		return ((SkyBlock) state.getBlock()).getSkyblockTime(world, state);
 	}
 
 	@Override

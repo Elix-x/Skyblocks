@@ -39,15 +39,15 @@ public class ClientProxy implements IProxy<SkyblocksBase> {
 
 	@SubscribeEvent
 	public static void registerModels(ModelRegistryEvent event){
-		ModelLoader.setCustomStateMapper(SkyblocksBase.INSTANCE.skyblock, new StateMapperBase() {
+		SkyblocksBase.INSTANCE.skyblocks.forEach(skyblock -> ModelLoader.setCustomStateMapper(skyblock, new StateMapperBase(){
 
 			@Override
 			protected ModelResourceLocation getModelResourceLocation(IBlockState state){
 				return new ModelResourceLocation(SkyblocksBase.SKYBLOCK, "normal");
 			}
 
-		});
-		for(int i = 0; i < 8; i++) ModelLoader.setCustomModelResourceLocation(SkyblocksBase.INSTANCE.skyblockItem, i, new ModelResourceLocation(SkyblocksBase.SKYBLOCK, "normal"));
+		}));
+		SkyblocksBase.INSTANCE.skyblockItems.forEach(item -> ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(SkyblocksBase.SKYBLOCK, "normal")));
 	}
 
 }
