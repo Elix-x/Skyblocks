@@ -21,6 +21,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
@@ -99,6 +100,11 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer<Skyblo
 		if(!skyblocks.isEmpty()) skyblocks.keySet().forEach(time -> WTWRenderer.Phase.STENCIL.render(() -> renderStencil(time, event.getPartialTicks()), () -> renderSky(time, event.getPartialTicks())));
 	}
 
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void postWTWRender(RenderWorldLastEvent event){
+		skyblocks.clear();
+	}
+
 	private void renderStencil(int time, float partialTicks){
 		GlStateManager.pushMatrix();
 		GlStateManager.disableTexture2D();
@@ -106,7 +112,7 @@ public class SkyblockTileEntityRenderer extends TileEntitySpecialRenderer<Skyblo
 		Tessellator tess = Tessellator.getInstance();
 		BufferBuilder buffer = tess.getBuffer();
 		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-		skyblocks.removeAll(time).forEach(consumer -> consumer.accept(buffer));
+		skyblocks.get(time).forEach(consumer -> consumer.accept(buffer));
 		tess.draw();
 		GlStateManager.disableBlend();
 		GlStateManager.enableTexture2D();
